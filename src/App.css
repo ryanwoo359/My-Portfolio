@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+#root {
+  min-height: 100vh;
+  background: transparent;
+}
+
+section {
+  padding: 64px 0 48px 0;
+  min-height: 80vh;
+  background: transparent;
+}
+
+/* Navbar Responsive Fixes */
+@media (min-width: 768px) {
+  .navbar-desktop {
+    display: flex !important;
+  }
+
+  .navbar-mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar-desktop {
+    display: none !important;
+  }
+
+  .navbar-mobile {
+    display: flex !important;
+  }
+}
+
+.github-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #222b4c;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 1.3em;
+  margin-top: 1.5rem;
+  font-size: 1.08rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.github-btn:hover,
+.github-btn:focus {
+  background: #1b223a;
+  color: #fff;
+  text-decoration: none;
+}
+
+.linkedin-btn {
+  background: #0077b5;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 1.3em;
+  margin-top: 1.5rem;
+  font-size: 1.08rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.linkedin-btn:hover,
+.linkedin-btn:focus {
+  background: #005983;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(0, 119, 181, 0.18);
+  text-decoration: none;
+}
+
+.github-btn + .linkedin-btn {
+  margin-left: 1rem;
+}
+
+.background {
+  background: 
+    /* Top fade (dark → transparent) */ linear-gradient(
+      to bottom,
+      #0a0a0a 10%,
+      transparent 40%
+    ),
+    /* Bottom fade (transparent → dark) */
+      linear-gradient(to top, #0a0a0a 10%, transparent 40%),
+    /* White strip at very top */
+      linear-gradient(white, white 6px, transparent 6px, transparent),
+    /* Grid background */
+      repeating-linear-gradient(
+        #4d4d4d,
+        #4d4d4d 1px,
+        transparent 1px,
+        transparent 40px
+      ),
+    repeating-linear-gradient(
+      to right,
+      #4d4d4d,
+      #4d4d4d 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    /* Base background */ #0a0a0a;
+}
