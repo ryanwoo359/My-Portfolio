@@ -1,17 +1,10 @@
 @import "tailwindcss";
 
-#root {
-  min-height: 100vh;
-  background: transparent;
+html,
+body {
+  @apply font-sans;
 }
 
-section {
-  padding: 64px 0 48px 0;
-  min-height: 80vh;
-  background: transparent;
-}
-
-/* Navbar Responsive Fixes */
 @media (min-width: 768px) {
   .navbar-desktop {
     display: flex !important;

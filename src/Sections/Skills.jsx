@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import Logo from "../components/Logo";
-import "./Page.css";
 
 export default function Skills() {
   const skills = [
@@ -34,30 +33,44 @@ export default function Skills() {
   const containerVariants = {
     hidden: {},
     visible: {
-      transition: {
-        staggerChildren: 0.25, // stagger each logo by 0.2s
-      },
+      transition: { staggerChildren: 0.25 },
+    },
+  };
+
+  const headingVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
     },
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen px-4">
-      <h2 className="text-2xl md:text-2xl lg:text-[3rem] mb-8 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent text-center">
+    <div className="flex flex-col md:items-center justify-center w-full min-h-screen px-4">
+      <h2 className="text-4xl lg:text-[3rem] mb-8 lg:mb-14 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
         Tech Stack
       </h2>
 
-      <div className="flex flex-col gap-20 w-full max-w-5xl">
+      <div className="flex flex-col gap-10 lg:gap-20 w-full max-w-5xl">
         {skills.map((section, index) => (
-          <div key={index} className="grid md:grid-cols-12">
-            <h3 className="text-4xl font-bold text-[grey] hover:text-[white] text-center md:col-span-5">
+          <div key={index} className="grid md:grid-cols-12 items-start">
+            <motion.h3
+              className="text-3xl md:text-5xl mb-4 font-bold text-[grey] hover:text-[white] text-center md:col-span-5"
+              variants={headingVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+            >
               {section.category}
-            </h3>
+            </motion.h3>
+
             <motion.div
               className="md:col-span-7 flex flex-wrap justify-center md:justify-start gap-x-11 gap-y-9"
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.2 }}
             >
               {section.items.map((item, idx) => (
                 <Logo src={item.src} name={item.name} key={idx} />

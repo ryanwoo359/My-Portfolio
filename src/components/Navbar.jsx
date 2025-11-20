@@ -71,7 +71,7 @@ const Navbar = () => {
           transition={{ duration: 0.2 }}
           onClick={() => handleClick("home")}
         >
-          <span className="text-2xl md:text-2xl lg:text-[1.5rem] font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent tracking-[-0.5px]">
+          <span className="text-1xl md:text-2xl lg:text-[1.5rem] font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent tracking-[-0.5px]">
             Ryan Woo
           </span>
           <span className="text-xs md:text-xs lg:text-[0.75rem] text-white/60 font-normal uppercase tracking-[1px]">
