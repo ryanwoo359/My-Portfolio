@@ -1,10 +1,21 @@
 import { motion } from "framer-motion";
-import Logo from "../components/Logo";
+
+function Icons({ image, name }) {
+  return (
+    <div className="relative flex flex-col items-center w-28 p-5">
+      <img src={image} className="w-10 h-10 object-contain" />
+      <span className="font-mono text-[10px] uppercase text-center">
+        {name}
+      </span>
+    </div>
+  );
+}
 
 export default function Skills() {
   const skills = [
     {
       category: "FRONTEND",
+      number: 5,
       items: [
         { src: "React.svg", name: "ReactJS" },
         { src: "Html.svg", name: "HTML" },
@@ -15,6 +26,7 @@ export default function Skills() {
     },
     {
       category: "BACKEND",
+      number: 3,
       items: [
         { src: "Javascript.svg", name: "JavaScript" },
         { src: "Node.svg", name: "Node.JS" },
@@ -23,19 +35,13 @@ export default function Skills() {
     },
     {
       category: "DATABASE",
+      number: 2,
       items: [
         { src: "Postgres.svg", name: "PostgreSQL" },
         { src: "Mysql.svg", name: "MySQL" },
       ],
     },
   ];
-
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: { staggerChildren: 0.25 },
-    },
-  };
 
   const headingVariants = {
     hidden: { opacity: 0, x: -50 },
@@ -47,35 +53,39 @@ export default function Skills() {
   };
 
   return (
-    <div className="flex flex-col md:items-center justify-center w-full min-h-screen px-4">
-      <h2 className="text-4xl lg:text-[3rem] mb-8 lg:mb-14 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
+    <div className=" relative max-w-[1300px] mx-auto min-h-screen px-4">
+      {/* <span className="absolute right-0 top-1/2 -translate-y-1/2 rotate-90 font-mono text-[10px] tracking-[0.3em] uppercase text-white whitespace-nowrap select-none pointer-events-none">
+        Skills · Tech Stack · Tools · Languages
+      </span> */}
+      <h2 className="text-center text-4xl lg:text-[3rem] mb-8 lg:mb-14 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
         Tech Stack
       </h2>
 
-      <div className="flex flex-col gap-10 lg:gap-20 w-full max-w-5xl">
+      <div>
         {skills.map((section, index) => (
-          <div key={index} className="grid md:grid-cols-12 items-start">
-            <motion.h3
-              className="text-3xl md:text-5xl mb-4 font-bold text-[grey] hover:text-[white] text-center md:col-span-5"
-              variants={headingVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-            >
-              {section.category}
-            </motion.h3>
-
-            <motion.div
-              className="md:col-span-7 flex flex-wrap justify-center md:justify-start gap-x-11 gap-y-9"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              {section.items.map((item, idx) => (
-                <Logo src={item.src} name={item.name} key={idx} />
+          <div
+            key={index}
+            className="grid grid-cols-[200px_1fr] gap-12 py-12 max-md:grid-cols-1 max-md:gap-6"
+          >
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[12px] tracking-[0.2em] bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
+                0{index + 1}
+              </span>
+              <h2
+                className="font-mono text-[clamp(28px,3vw,42px)] leading-none font-bold text-[grey]"
+                variants={headingVariants}
+              >
+                {section.category}
+              </h2>
+              <span className=" font-mono uppercase text-[12px] text-[grey]">
+                {section.number} Technologies
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {section.items.map((item, index) => (
+                <Icons image={item.src} name={item.name} key={index} />
               ))}
-            </motion.div>
+            </div>
           </div>
         ))}
       </div>
