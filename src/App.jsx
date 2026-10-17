@@ -1,44 +1,35 @@
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./Sections/Home";
 import About from "./Sections/About";
 import Skills from "./Sections/Skills";
 import Project from "./Sections/Project";
-import "./App.css";
+import Contact from "./Sections/Contact";
+import { ThemeProvider } from "./theme/ThemeContext";
 
-import Test from "./Test";
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <Navbar />
-      <section
-        id="home"
-        // bg-gradient-to-br from-[#0d0d0d] via-[#0047AB] to-[#1a1a1a]
-        className="min-h-screen flex items-center"
-      >
-        <Home />
-      </section>
-      <section
-        id="about"
-        className="sm:mx-0 mx-4 min-h-screen flex items-center scroll-mt-20 lg:scroll-mt-0"
-      >
-        <About />
-      </section>
-      <section
-        id="skills"
-        className="scroll-mt-20 md:scroll-mt-0 lg:min-h-screen flex items-center background my-16 lg:my-0 "
-      >
-        <Skills />
-      </section>
-      <section
-        id="projects"
-        className="scroll-mt-20 md:scroll-mt-0 sm:mx-0 mx-4 lg:min-h-screen flex items-center"
-      >
-        <Project />
-      </section>
-      {/* <section>
-        <Test />
-      </section> */}
-    </>
+      <main>
+        <section id="welcome" aria-label="Welcome">
+          <Home />
+        </section>
+        <section id="about" aria-label="About" className="py-24 md:py-32 border-t-2 border-line">
+          <About />
+        </section>
+        <section id="skills" aria-label="Skills" className="py-24 md:py-32 border-t-2 border-line bg-bg-alt bg-grid">
+          <Skills />
+        </section>
+        <section id="projects" aria-label="Projects" className="py-24 md:py-32 border-t-2 border-line">
+          <Project />
+        </section>
+        <section id="contact" aria-label="Contact" className="py-24 md:py-32 border-t-2 border-line bg-bg-alt bg-grid">
+          <Contact />
+        </section>
+      </main>
+      <Footer />
+    </ThemeProvider>
   );
 }
 

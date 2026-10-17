@@ -1,32 +1,366 @@
-:root {
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0a0a0a;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ------------------------------------------------------------------
+   Design tokens
+   Light = beige 80s workstation · Dark = CRT phosphor terminal
+------------------------------------------------------------------- */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ece6d6;
+  --bg-alt: #e2dbc7;
+  --surface: #f7f3e8;
+  --surface-2: #ddd5bf;
+  --ink: #1d1b16;
+  --ink-muted: #59544a;
+  --line: #1d1b16;
+  --line-soft: rgba(29, 27, 22, 0.16);
+  --accent: #c2410c;
+  --accent-2: #0b6e69;
+  --accent-ink: #fff8ef;
+  --grid: rgba(29, 27, 22, 0.09);
+  --shadow: 5px 5px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --glow: none;
+  --sun-a: #f59e0b;
+  --sun-b: #c2410c;
+  --scanline-opacity: 0;
 }
-@layer base {
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #07090d;
+  --bg-alt: #0a0e14;
+  --surface: #0e131b;
+  --surface-2: #161e2a;
+  --ink: #e4efff;
+  --ink-muted: #8b9cb3;
+  --line: #2b3b50;
+  --line-soft: rgba(94, 241, 255, 0.12);
+  --accent: #5ef1ff;
+  --accent-2: #ffb547;
+  --accent-ink: #041016;
+  --grid: rgba(94, 241, 255, 0.12);
+  --shadow: 0 0 0 1px rgba(94, 241, 255, 0.08), 0 0 28px rgba(94, 241, 255, 0.07);
+  --shadow-sm: 0 0 14px rgba(94, 241, 255, 0.12);
+  --glow: 0 0 10px rgba(94, 241, 255, 0.55);
+  --sun-a: #ffb547;
+  --sun-b: #ff3d9a;
+  --scanline-opacity: 1;
+}
+
+/* Expose tokens as Tailwind utilities: bg-surface, text-ink, border-line… */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-pixel: "VT323", "JetBrains Mono", monospace;
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
 }
 
 body {
-  color: white;
-  font-family: "Inter", "Segoe UI", Arial, sans-serif;
-  font-size: 18px;
   margin: 0;
-  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* CRT scanlines + vignette (dark mode only) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2000;
+  opacity: var(--scanline-opacity);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.025) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.45) 100%);
+  transition: opacity 0.35s ease;
+}
+
+:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------
+   Reusable pieces
+------------------------------------------------------------------- */
+.bg-grid {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Retro window panel */
+.window {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: background-color 0.35s ease, border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.window-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 2px solid var(--line);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.window-bar .dots {
+  display: flex;
+  gap: 5px;
+}
+.window-bar .dots span {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--line);
+}
+.window-bar .dots span:first-child {
+  background: var(--accent);
+}
+
+/* HUD label, e.g. "// 02 — ABOUT" */
+.hud {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: var(--glow);
+}
+
+.glow-text {
+  text-shadow: var(--glow);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 2px solid var(--line);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.2s ease, color 0.2s ease;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+:root[data-theme="light"] .btn-primary {
+  border-color: var(--line);
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.btn:hover {
+  transform: translate(-2px, -2px);
+}
+:root[data-theme="light"] .btn:hover {
+  box-shadow: 5px 5px 0 var(--ink);
+}
+:root[data-theme="dark"] .btn-primary:hover {
+  box-shadow: 0 0 22px rgba(94, 241, 255, 0.55);
+}
+:root[data-theme="dark"] .btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+/* Blinking block cursor */
+.cursor::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.15em;
+  vertical-align: -0.12em;
+  background: var(--accent);
+  box-shadow: var(--glow);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Glitch heading — uses data-text for the offset copies */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.glitch::before {
+  color: var(--accent);
+  transform: translate(-3px, 0);
+  clip-path: inset(0 0 55% 0);
+}
+.glitch::after {
+  color: var(--accent-2);
+  transform: translate(3px, 0);
+  clip-path: inset(55% 0 0 0);
+}
+.glitch:hover::before,
+.glitch:hover::after {
+  opacity: 0.85;
+  animation: glitch 0.35s steps(2) infinite;
+}
+@keyframes glitch {
+  0% {
+    clip-path: inset(10% 0 60% 0);
+  }
+  33% {
+    clip-path: inset(50% 0 20% 0);
+  }
+  66% {
+    clip-path: inset(30% 0 40% 0);
+  }
+  100% {
+    clip-path: inset(70% 0 5% 0);
+  }
+}
+
+/* Synthwave perspective floor in the hero */
+.grid-floor {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  height: 55%;
+  background-image:
+    linear-gradient(var(--grid) 2px, transparent 2px),
+    linear-gradient(90deg, var(--grid) 2px, transparent 2px);
+  background-size: 60px 60px;
+  transform: perspective(420px) rotateX(62deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, black 30%, transparent 100%);
+  animation: floor 3s linear infinite;
+}
+@keyframes floor {
+  to {
+    background-position: 0 60px;
+  }
+}
+
+/* Striped retro sun */
+.retro-sun {
+  background: linear-gradient(to bottom, var(--sun-a), var(--sun-b));
+  border-radius: 50%;
+  mask-image: linear-gradient(
+    to bottom,
+    black 0 52%,
+    transparent 52% 56%,
+    black 56% 64%,
+    transparent 64% 69%,
+    black 69% 76%,
+    transparent 76% 82%,
+    black 82% 88%,
+    transparent 88% 100%
+  );
+}
+:root[data-theme="light"] .retro-sun {
+  opacity: 0.55;
+}
+:root[data-theme="dark"] .retro-sun {
+  opacity: 0.4;
+  filter: drop-shadow(0 0 40px rgba(255, 61, 154, 0.5));
+}
+
+/* Icons that are drawn black need flipping on the CRT */
+:root[data-theme="dark"] .invert-dark {
+  filter: invert(1) brightness(0.9);
+}
+
+/* Form fields */
+.field {
+  width: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  padding: 0.7rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field::placeholder {
+  color: var(--ink-muted);
+  opacity: 0.7;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

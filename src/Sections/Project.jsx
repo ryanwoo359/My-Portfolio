@@ -1,36 +1,31 @@
-import React from "react";
-import { motion } from "framer-motion";
+import SectionHeader from "../components/SectionHeader";
 import ProjectCard from "../components/ProjectCard";
+import { LINKS, PROJECTS } from "../data/profile";
 
-const projects = [
-  {
-    name: "RPM NYC",
-    description:
-      "A modern, responsive website for RPM NYC designed to enhance their digital footprint.",
-    website: "https://rpm-nyc.vercel.app/",
-    github: "https://github.com/ryanwoo359/RPM-NYC",
-    techStack: ["ReactJS", "CSS", "Node.js"],
-  },
-  {
-    name: "Portfolio",
-    description:
-      "My portfolio designed to highlight my skills, projects, and experiences with modern web technologies",
-    website: "a",
-    github: "https://github.com/ryanwoo359/My-Portfolio",
-    techStack: ["ReactJS", "TailwindCSS"],
-  },
-];
 export default function Project() {
   return (
-    <div id="projects" className="w-[1200px] mx-auto">
-      <h2 className="text-4xl text-center lg:text-[3rem] mb-8 lg:mb-14 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
-        Projects
-      </h2>
-      <div className="flex justify-around flex-wrap gap-4">
-        {projects.map((project, idx) => (
-          <ProjectCard key={idx} {...project} />
+    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+      <SectionHeader index={4} label="Projects" title="Projects">
+        Things I've designed and built, from client sites to personal experiments.
+      </SectionHeader>
+
+      <div className="grid gap-8 md:grid-cols-2">
+        {PROJECTS.map((project, i) => (
+          <ProjectCard key={project.name} index={i} {...project} />
         ))}
       </div>
+
+      <p className="mt-10 font-mono text-sm text-ink-muted">
+        <span className="text-accent">&gt;</span> more on{" "}
+        <a
+          href={LINKS.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-ink underline decoration-accent decoration-2 underline-offset-4 hover:text-accent"
+        >
+          github.com/ryanwoo359
+        </a>
+      </p>
     </div>
   );
 }

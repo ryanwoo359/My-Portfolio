@@ -1,193 +1,163 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import ThemeToggle from "./ThemeToggle";
+import { LINKS, NAV_ITEMS } from "../data/profile";
 
-const navItems = [
-  { id: "about", label: "ABOUT" },
-  { id: "skills", label: "SKILLS" },
-  { id: "projects", label: "PROJECTS" },
-];
-
-const Navbar = () => {
-  const [active, setActive] = useState("home");
+export default function Navbar() {
+  const [active, setActive] = useState("welcome");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const btnRefs = useRef({});
-  const navLinksRef = useRef(null);
 
+  // Highlight whichever section is crossing the middle of the viewport.
   useEffect(() => {
-    const handleScroll = () => {
-      // Handle scroll position for active nav item
-      const offsets = navItems.map((item) => {
-        const el = document.getElementById(item.id);
-        return el ? el.offsetTop : 0;
-      });
-      const scrollY = window.scrollY + 80;
-      let current = "home";
-      for (let i = offsets.length - 1; i >= 0; i--) {
-        if (scrollY >= offsets[i]) {
-          current = navItems[i].id;
-          break;
-        }
-      }
-      if (
-        window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 10
-      ) {
-        current = navItems[navItems.length - 1].id;
-      }
-      setActive(current);
-
-      // Handle navbar background on scroll
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => e.isIntersecting && setActive(e.target.id));
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    NAV_ITEMS.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
   }, []);
 
-  const handleClick = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    setMenuOpen(false);
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   return (
-    <motion.nav
-      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-100 ${
-        scrolled
-          ? "backdrop-blur-md shadow-lg border-b border-white/20"
-          : "backdrop-blur-sm border-b border-white/10"
+    <header
+      className={`fixed inset-x-0 top-0 z-[1000] transition-[background-color,border-color] duration-300 border-b-2 ${
+        scrolled || menuOpen
+          ? "bg-surface/90 backdrop-blur-md border-line"
+          : "bg-transparent border-transparent"
       }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <div className="max-w-[1400px] mx-auto px-8 md:px-8 h-20 flex items-center justify-between">
-        {/* Brand Section */}
-        <motion.div
-          className="flex flex-col items-start cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.2 }}
-          onClick={() => handleClick("home")}
-        >
-          <span className="text-1xl md:text-2xl lg:text-[1.5rem] font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent tracking-[-0.5px]">
-            Ryan Woo
-          </span>
-          <span className="text-xs md:text-xs lg:text-[0.75rem] text-white/60 font-normal uppercase tracking-[1px]">
-            Developer
-          </span>
-        </motion.div>
-
-        {/* Desktop Navigation */}
-        <ul
-          className="navbar-desktop list-none gap-6 items-center"
-          ref={navLinksRef}
-        >
-          {navItems.map((item) => (
-            <motion.li
-              key={item.id}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
-            >
-              <button
-                ref={(el) => (btnRefs.current[item.id] = el)}
-                className={`relative bg-none border-none text-white/80 text-sm md:text-sm lg:text-[0.9rem] font-medium uppercase tracking-[1px] px-6 py-3 cursor-pointer transition-all duration-300 overflow-hidden ${
-                  active === item.id ? "text-white]" : "hover:text-white"
-                }`}
-                onClick={() => handleClick(item.id)}
-              >
-                <span className="relative z-10">{item.label}</span>
-                <div
-                  className={`absolute inset-0 transition-opacity duration-300 ${
-                    active === item.id || "hover:opacity-100"
-                      ? "opacity-100"
-                      : "opacity-0"
-                  }`}
-                  style={{ zIndex: -1 }}
-                />
-              </button>
-            </motion.li>
-          ))}
-          <motion.li whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
-            <a
-              href="Ryan_Woo_Resume.docx.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative bg-none border-none text-white/80 text-sm md:text-sm lg:text-[0.9rem] font-medium uppercase tracking-[1px] px-6 py-3 cursor-pointer transition-all duration-300 overflow-hidden hover:text-white"
-            >
-              <span className="relative z-10">RESUME</span>
-            </a>
-          </motion.li>
-        </ul>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="navbar-mobile flex flex-col justify-around w-[30px] h-[25px] bg-none border-none cursor-pointer p-0 z-[1001]"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          <span
-            className={`w-full h-[3px] bg-white rounded-[2px] transition-all duration-300 origin-center ${
-              menuOpen ? "rotate-45 translate-x-[6px] translate-y-[6px]" : ""
-            }`}
-          ></span>
-          <span
-            className={`w-full h-[3px] bg-white rounded-[2px] transition-all duration-300 ${
-              menuOpen ? "opacity-0" : ""
-            }`}
-          ></span>
-          <span
-            className={`w-full h-[3px] bg-white rounded-[2px] transition-all duration-300 origin-center ${
-              menuOpen ? "-rotate-45 translate-x-[6px] -translate-y-[6px]" : ""
-            }`}
-          ></span>
-        </button>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      <div
-        className={`md:hidden fixed top-0 right-0 w-full h-screen bg-black/95 backdrop-blur-md border-l border-white/20 flex flex-col justify-center items-center gap-8 p-8 transition-all duration-300 ease-in-out ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{ zIndex: 999 }}
+      <nav
+        aria-label="Primary"
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
       >
-        {navItems.map((item) => (
-          <motion.button
-            key={item.id}
-            className={`text-xl md:text-xl lg:text-[1.2rem] px-8 py-4 rounded-[50px] cursor-pointer transition-all duration-300 relative overflow-hidden ${
-              active === item.id
-                ? "text-white shadow-[0_4px_20px_rgba(100,108,255,0.3)]"
-                : "text-white/80 hover:text-white"
-            }`}
-            onClick={() => handleClick(item.id)}
-            whileHover={{ y: -2 }}
+        <a
+          href="#welcome"
+          onClick={() => setMenuOpen(false)}
+          className="flex items-center gap-2 font-mono font-bold tracking-tight"
+        >
+          <span className="grid h-8 w-8 place-items-center border-2 border-line bg-accent text-accent-ink text-xs">
+            RW
+          </span>
+          <span className="cursor hidden sm:inline">ryan_woo</span>
+        </a>
+
+        <div className="flex items-center gap-2 md:gap-6">
+          <ul className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item, i) => {
+              const isActive = active === item.id;
+              return (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`relative block px-3 py-2 font-mono text-xs uppercase tracking-[0.14em] transition-colors ${
+                      isActive ? "text-accent glow-text" : "text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    <span className="opacity-60">0{i + 1}.</span>
+                    {item.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-underline"
+                        className="absolute inset-x-3 -bottom-px h-[2px] bg-accent shadow-[var(--glow)]"
+                      />
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+            <li>
+              <a
+                href={LINKS.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-2 block border-2 border-line px-3 py-1.5 font-mono text-xs uppercase tracking-[0.14em] hover:bg-accent hover:text-accent-ink hover:border-accent transition-colors"
+              >
+                Resume ↗
+              </a>
+            </li>
+          </ul>
+
+          <ThemeToggle />
+
+          <button
+            type="button"
+            className="md:hidden grid h-9 w-9 place-items-center border-2 border-line bg-bg"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+          >
+            <span className="font-mono text-sm font-bold">{menuOpen ? "✕" : "≡"}</span>
+          </button>
+        </div>
+      </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            id="mobile-menu"
+            className="md:hidden fixed inset-x-0 top-16 bottom-0 bg-bg bg-grid border-t-2 border-line px-6 py-10"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.2 }}
           >
-            <span className="relative z-10">{item.label}</span>
-            <div
-              className={`absolute inset-0 transition-opacity duration-300 ${
-                active === item.id || "hover:opacity-100"
-                  ? "opacity-100"
-                  : "opacity-0"
-              }`}
-              style={{ zIndex: -1 }}
-            />
-          </motion.button>
-        ))}
-        <motion.a
-          href="Ryan_Woo_Resume.docx.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xl md:text-xl lg:text-[1.2rem] px-8 py-4 rounded-[50px] cursor-pointer transition-all duration-300 relative overflow-hidden text-white/80 hover:text-white"
-          whileHover={{ y: -2 }}
-          transition={{ duration: 0.2 }}
-        >
-          <span className="relative z-10">RESUME</span>
-        </motion.a>
-      </div>
-    </motion.nav>
+            <p className="hud mb-6">&gt; select destination_</p>
+            <ul className="flex flex-col gap-3">
+              {NAV_ITEMS.map((item, i) => (
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className={`window flex items-center justify-between px-5 py-4 font-mono uppercase tracking-[0.12em] ${
+                      active === item.id ? "text-accent" : ""
+                    }`}
+                  >
+                    <span>
+                      <span className="text-ink-muted mr-3">0{i + 1}</span>
+                      {item.label}
+                    </span>
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a
+                  href={LINKS.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary w-full justify-center mt-4"
+                >
+                  Resume ↗
+                </a>
+              </li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
-};
-
-export default Navbar;
+}

@@ -1,92 +1,74 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
+import SectionHeader from "../components/SectionHeader";
+import Window from "../components/Window";
+import { SKILLS } from "../data/profile";
 
-function Icons({ image, name }) {
+function SkillTile({ item }) {
   return (
-    <div className="relative flex flex-col items-center w-28 p-5">
-      <img src={image} className="w-10 h-10 object-contain" />
-      <span className="font-mono text-[10px] uppercase text-center">
-        {name}
+    <li className="group relative flex flex-col items-center gap-3 border-2 border-line-soft bg-bg/60 px-3 py-5 transition-[border-color,transform] duration-200 hover:-translate-y-1 hover:border-accent">
+      {item.icon ? (
+        <img
+          src={item.icon}
+          alt=""
+          className={`h-10 w-10 object-contain transition-transform duration-200 group-hover:scale-110 ${
+            item.invertDark ? "invert-dark" : ""
+          }`}
+        />
+      ) : (
+        <span className="grid h-10 w-10 place-items-center border-2 border-line font-mono text-sm font-bold text-accent">
+          {item.mono}
+        </span>
+      )}
+      <span className="font-mono text-[0.72rem] uppercase tracking-[0.12em] text-center">
+        {item.name}
       </span>
-    </div>
+      {item.note && (
+        <span className="absolute right-1.5 top-1.5 bg-accent-2 px-1.5 font-mono text-[0.55rem] font-bold uppercase tracking-wider text-bg">
+          {item.note}
+        </span>
+      )}
+    </li>
   );
 }
 
 export default function Skills() {
-  const skills = [
-    {
-      category: "FRONTEND",
-      number: 5,
-      items: [
-        { src: "React.svg", name: "ReactJS" },
-        { src: "Html.svg", name: "HTML" },
-        { src: "Css.svg", name: "CSS" },
-        { src: "Tailwind.svg", name: "Tailwind" },
-        { src: "Bootstrap.svg", name: "Bootstrap" },
-      ],
-    },
-    {
-      category: "BACKEND",
-      number: 3,
-      items: [
-        { src: "Javascript.svg", name: "JavaScript" },
-        { src: "Node.svg", name: "Node.JS" },
-        { src: "Express.svg", name: "ExpressJS" },
-      ],
-    },
-    {
-      category: "DATABASE",
-      number: 2,
-      items: [
-        { src: "Postgres.svg", name: "PostgreSQL" },
-        { src: "Mysql.svg", name: "MySQL" },
-      ],
-    },
-  ];
-
-  const headingVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
+  const total = SKILLS.reduce((n, s) => n + s.items.length, 0);
 
   return (
-    <div className=" relative max-w-[1300px] mx-auto min-h-screen px-4">
-      {/* <span className="absolute right-0 top-1/2 -translate-y-1/2 rotate-90 font-mono text-[10px] tracking-[0.3em] uppercase text-white whitespace-nowrap select-none pointer-events-none">
-        Skills · Tech Stack · Tools · Languages
-      </span> */}
-      <h2 className="text-center text-4xl lg:text-[3rem] mb-8 lg:mb-14 font-bold bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
-        Tech Stack
-      </h2>
+    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+      <SectionHeader index={3} label="Skills" title="Tech Stack">
+        {total} technologies I work with, sorted by the layer of the stack they live in.
+      </SectionHeader>
 
-      <div>
-        {skills.map((section, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[200px_1fr] gap-12 py-12 max-md:grid-cols-1 max-md:gap-6"
+      <div className="grid gap-6 md:grid-cols-2">
+        {SKILLS.map((group, i) => (
+          <motion.div
+            key={group.category}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: (i % 2) * 0.1, ease: "easeOut" }}
           >
-            <div className="flex flex-col gap-2">
-              <span className="font-mono text-[12px] tracking-[0.2em] bg-gradient-to-br from-[#0052D4] to-[#6FB1FC] bg-clip-text text-transparent">
-                0{index + 1}
-              </span>
-              <h2
-                className="font-mono text-[clamp(28px,3vw,42px)] leading-none font-bold text-[grey]"
-                variants={headingVariants}
-              >
-                {section.category}
-              </h2>
-              <span className=" font-mono uppercase text-[12px] text-[grey]">
-                {section.number} Technologies
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {section.items.map((item, index) => (
-                <Icons image={item.src} name={item.name} key={index} />
-              ))}
-            </div>
-          </div>
+            <Window
+              title={`/stack/${group.code.toLowerCase()}`}
+              meta={`${String(group.items.length).padStart(2, "0")} modules`}
+              className="h-full"
+            >
+              <div className="mb-5 flex items-baseline gap-3">
+                <span className="font-mono text-sm text-accent glow-text">
+                  0{i + 1}
+                </span>
+                <h3 className="text-2xl font-bold uppercase tracking-tight">
+                  {group.category}
+                </h3>
+              </div>
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {group.items.map((item) => (
+                  <SkillTile key={item.name} item={item} />
+                ))}
+              </ul>
+            </Window>
+          </motion.div>
         ))}
       </div>
     </div>
